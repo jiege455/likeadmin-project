@@ -75,8 +75,8 @@ jobs:
           自动构建的App资源文件
           构建时间: ${{ github.event.head_commit.timestamp }}
           提交信息: ${{ github.event.head_commit.message }}
+        # 只上传存在的目录
         files: |
-          uniapp/dist/build/app/**
-          uniapp/dist/build/app-plus/**
+          uniapp/dist/build/app/**/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

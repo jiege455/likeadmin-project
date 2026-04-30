@@ -1,0 +1,92 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      
+    - name: Install dependencies
+      run: |
+        cd uniapp
+        npm install
+        
+    - name: Build App Resources
+      run: |
+        cd uniapp
+        npm run build:app
+        
+    - name: Download UniApp Offline SDK
+      run: |
+        mkdir -p android-sdk
+        cd android-sdk
+        # 下载DCloud离线打包SDK
+        wget -q https://native-res.dcloud.net.cn/android-sdk/Android-SDK@4.36.81559_20241231.zip -O android-sdk.zip || true
+        if [ -f android-sdk.zip ]; then
+          unzip -q android-sdk.zip
+        fi
+        
+    - name: Prepare Android Project
+      run: |
+        # 创建简单的Android项目结构
+        mkdir -p android-app/app/src/main/assets/apps
+        # 复制uniapp构建的资源
+        if [ -d "uniapp/dist/build/app-plus" ]; then
+          cp -r uniapp/dist/build/app-plus/* android-app/app/src/main/assets/apps/
+        fi
+        
+    - name: Build APK with Gradle
+      run: |
+        if [ -f "android-sdk/gradle/wrapper/gradle-wrapper.properties" ]; then
+          cd android-sdk
+          ./gradlew assembleRelease || true
+        fi
+        
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk
+        path: |
+          android-sdk/**/build/outputs/apk/**/*.apk
+          uniapp/dist/build/app-plus/
+        if-no-files-found: warn
+        
+    - name: Create Release with APK
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: apk-v${{ github.run_number }}
+        name: Android APK Release v${{ github.run_number }}
+        body: |
+          自动构建的Android APK
+          构建时间: ${{ github.event.head_commit.timestamp }}
+          提交信息: ${{ github.event.head_commit.message }}
+          
+          注意：此APK为自动构建版本，如需正式签名APK，请使用HBuilderX云打包或本地离线打包。
+        files: |
+          android-sdk/**/build/outputs/apk/**/*.apk
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

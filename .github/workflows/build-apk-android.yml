@@ -50,13 +50,21 @@ jobs:
           find uniapp/dist/build/ -type d -maxdepth 1 || true
         fi
         
+    - name: Zip App Resources
+      run: |
+        cd uniapp/dist/build
+        if [ -d "app" ]; then
+          zip -r android-app-resources.zip app/
+        elif [ -d "app-plus" ]; then
+          zip -r android-app-resources.zip app-plus/
+        fi
+        
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: android-app-resources
         path: |
-          uniapp/dist/build/app/
-          uniapp/dist/build/app-plus/
+          uniapp/dist/build/android-app-resources.zip
         if-no-files-found: warn
         
     - name: Create Release
@@ -67,12 +75,19 @@ jobs:
         name: Android Resources Release v${{ github.run_number }}
         body: |
           自动构建的Android App资源文件
+          
+          使用方法：
+          1. 下载 android-app-resources.zip
+          2. 解压得到 app 或 app-plus 文件夹
+          3. 使用 HBuilderX 打开项目
+          4. 点击 发行 → 原生App-云打包
+          5. 选择 Android 平台，点击打包
+          
+          注意：此资源文件需要使用HBuilderX云打包才能生成APK。
+          
           构建时间: ${{ github.event.head_commit.timestamp }}
           提交信息: ${{ github.event.head_commit.message }}
-          
-          注意：此资源文件需要使用HBuilderX或离线SDK打包成APK。
-        # 使用通配符上传整个目录
         files: |
-          uniapp/dist/build/app/*
+          uniapp/dist/build/android-app-resources.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

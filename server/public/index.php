@@ -1,0 +1,43 @@
+<?php
+// +----------------------------------------------------------------------
+// | ThinkPHP [ WE CAN DO IT JUST THINK ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2006-2019 http://thinkphp.cn All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+// +----------------------------------------------------------------------
+// | Author: liu21st <liu21st@gmail.com>
+// +----------------------------------------------------------------------
+
+// [ 应用入口文件 ]
+namespace think;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+// 全局日志打桩
+if (strpos($_SERVER['REQUEST_URI'] ?? '', 'merchant.apply') !== false) {
+    $logData = [
+        'uri' => $_SERVER['REQUEST_URI'],
+        'method' => $_SERVER['REQUEST_METHOD'],
+        'post' => $_POST,
+        'input' => file_get_contents('php://input'),
+        'ip' => $_SERVER['REMOTE_ADDR']
+    ];
+    file_put_contents(__DIR__ . '/../runtime/api/log/merchant_debug.log', date('Y-m-d H:i:s') . ' ' . json_encode($logData, JSON_UNESCAPED_UNICODE) . PHP_EOL, FILE_APPEND);
+}
+
+$url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$whe = !str_starts_with($url, '/adminapi/config/getConfig') && !str_starts_with($url, '/api/pc/config') && !str_starts_with($url, '/api/index/config');
+if ($whe && !file_exists(__DIR__ . '/../config/install.lock')) {
+    header("location:/install/install.php");
+    exit;
+}
+
+// 执行HTTP应用并响应
+$http = (new App())->http;
+
+$response = $http->run();
+
+$response->send();
+
+$http->end($response);

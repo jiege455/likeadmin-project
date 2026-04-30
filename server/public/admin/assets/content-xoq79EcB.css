@@ -1,0 +1,1 @@
+.rubik-cube[data-v-d075b0f1]{overflow:hidden}.rubik-cube .grid[data-v-d075b0f1]{display:grid;gap:10px}.rubik-cube .grid.cols-1[data-v-d075b0f1]{grid-template-columns:repeat(2,1fr)}.rubik-cube .grid.cols-2[data-v-d075b0f1]{grid-template-columns:repeat(3,1fr)}.rubik-cube .grid .grid-item[data-v-d075b0f1]{aspect-ratio:1;border-radius:4px;overflow:hidden}

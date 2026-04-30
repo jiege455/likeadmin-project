@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮箱配置菜单导入工具 - 杰哥网络科技</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header p { opacity: 0.9; }
+        .content { padding: 40px; }
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .step h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .step p { color: #555; line-height: 1.6; }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 10px 10px 0;
+            transition: transform 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        .btn-info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .info-box strong { color: #1976d2; }
+        .warning-box {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .warning-box strong { color: #f57c00; }
+        .result {
+            background: #f1f8e9;
+            border: 2px solid #4caf50;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .result h3 { color: #2e7d32; margin-bottom: 10px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th { background: #667eea; color: white; }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+        .code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .check-list { list-style: none; }
+        .check-list li {
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        .check-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📧 邮箱配置菜单导入工具</h1>
+            <p>开发者：杰哥网络科技 QQ: 2711793818</p>
+        </div>
+        
+        <div class="content">
+            <div class="info-box">
+                <strong>📌 工具说明：</strong><br>
+                本工具用于在后台管理系统中添加"邮箱配置"菜单，让您可以在后台配置邮箱服务。
+            </div>
+
+            <h2 style="margin: 30px 0 20px;">🎯 快速执行（推荐）</h2>
+            <div class="step">
+                <h3>第一步：执行导入</h3>
+                <p>点击下方按钮，自动执行 SQL 导入，将邮箱配置菜单添加到数据库。</p>
+                <div style="margin-top: 15px;">
+                    <button class="btn" onclick="executeImport()">▶️ 立即执行导入</button>
+                </div>
+            </div>
+
+            <div class="step">
+                <h3>第二步：清除缓存</h3>
+                <p>导入成功后，需要清除系统缓存才能看到新菜单。</p>
+                <div style="margin-top: 15px;">
+                    <a href="/likeadmin_php-master/admin" class="btn btn-info" target="_blank">🔧 前往清除缓存</a>
+                </div>
+            </div>
+
+            <div class="step">
+                <h3>第三步：验证菜单</h3>
+                <p>点击下方按钮验证菜单是否成功添加。</p>
+                <div style="margin-top: 15px;">
+                    <a href="check_email_menu.php" class="btn btn-success" target="_blank">✓ 验证菜单</a>
+                </div>
+            </div>
+
+            <h2 style="margin: 30px 0 20px;">📋 菜单详情</h2>
+            <table>
+                <tr>
+                    <th>字段</th>
+                    <th>值</th>
+                </tr>
+                <tr>
+                    <td>菜单名称</td>
+                    <td>邮箱配置</td>
+                </tr>
+                <tr>
+                    <td>菜单位置</td>
+                    <td>系统设置 → 邮箱配置</td>
+                </tr>
+                <tr>
+                    <td>菜单图标</td>
+                    <td>el-icon-Message</td>
+                </tr>
+                <tr>
+                    <td>权限标识</td>
+                    <td>setting.email/config</td>
+                </tr>
+                <tr>
+                    <td>组件路径</td>
+                    <td>setting/email/index</td>
+                </tr>
+            </table>
+
+            <h2 style="margin: 30px 0 20px;">⚙️ 邮箱配置说明</h2>
+            <div class="warning-box">
+                <strong>⚠️ QQ 邮箱注意事项：</strong><br>
+                QQ 邮箱需使用授权码，而不是登录密码。授权码获取方法：<br>
+                1. 登录 QQ 邮箱网页版 → 设置 → 账户<br>
+                2. 开启"POP3/SMTP 服务"<br>
+                3. 生成授权码
+            </div>
+
+            <table>
+                <tr>
+                    <th>配置项</th>
+                    <th>说明</th>
+                    <th>示例</th>
+                </tr>
+                <tr>
+                    <td>SMTP 服务器</td>
+                    <td>邮箱 SMTP 服务器地址</td>
+                    <td>smtp.qq.com</td>
+                </tr>
+                <tr>
+                    <td>端口</td>
+                    <td>SMTP 服务器端口</td>
+                    <td>465 (SSL)</td>
+                </tr>
+                <tr>
+                    <td>加密方式</td>
+                    <td>SSL / TLS / 无加密</td>
+                    <td>SSL</td>
+                </tr>
+                <tr>
+                    <td>发件人账号</td>
+                    <td>发送邮件的邮箱账号</td>
+                    <td>your@qq.com</td>
+                </tr>
+                <tr>
+                    <td>授权密码</td>
+                    <td>邮箱授权码（非登录密码）</td>
+                    <td>xxxxxxxxxxxx</td>
+                </tr>
+                <tr>
+                    <td>管理员邮箱</td>
+                    <td>接收系统通知的邮箱</td>
+                    <td>admin@example.com</td>
+                </tr>
+            </table>
+
+            <h2 style="margin: 30px 0 20px;">✅ 验证清单</h2>
+            <ul class="check-list">
+                <li>执行导入脚本</li>
+                <li>查看执行结果（显示成功信息）</li>
+                <li>清除系统缓存</li>
+                <li>重新登录后台</li>
+                <li>在"系统设置"菜单下找到"邮箱配置"</li>
+                <li>配置邮箱服务信息</li>
+                <li>发送测试邮件验证</li>
+            </ul>
+
+            <div class="info-box">
+                <strong>📚 相关文档：</strong><br>
+                • <a href="../邮箱配置功能检查报告.md" target="_blank">邮箱配置功能检查报告</a><br>
+                • <a href="../邮箱配置菜单导入完成报告.md" target="_blank">邮箱配置菜单导入完成报告</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>技术支持：杰哥网络科技 | QQ: 2711793818 | 公众号：杰哥网络科技</p>
+        </div>
+    </div>
+
+    <script>
+        function executeImport() {
+            if (confirm('确定要执行邮箱配置菜单导入吗？\n\n执行成功后需要清除缓存并重新登录后台。')) {
+                // 执行导入
+                fetch('exec_email_menu_import.php')
+                    .then(response => response.text())
+                    .then(data => {
+                        // 打开新窗口显示结果
+                        const win = window.open('', '_blank');
+                        win.document.write(data);
+                        win.document.close();
+                    })
+                    .catch(error => {
+                        alert('执行失败：' + error);
+                    });
+            }
+        }
+    </script>
+</body>
+</html>

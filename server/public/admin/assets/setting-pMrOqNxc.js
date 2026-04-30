@@ -1,0 +1,1 @@
+import{r as t}from"./index-Dun0cTL3.js";function o(){return t.get({url:"/setting.config/getCommissionConfig"})}function s(n){return t.post({url:"/setting.config/setCommissionConfig",params:n})}function g(){return t.get({url:"/setting.config/getSmtpConfig"})}function e(n){return t.post({url:"/setting.config/setSmtpConfig",params:n})}export{g as a,e as b,o as g,s};

@@ -1,0 +1,1 @@
+import{a4 as a}from"./index-a6824a0a.js";function t(t){return a.get({url:"/coupon/merchantList",data:t})}function r(t){return a.post({url:"/coupon/receive",data:t})}function n(t){return a.get({url:"/coupon/available",data:t})}export{n as a,t as g,r};

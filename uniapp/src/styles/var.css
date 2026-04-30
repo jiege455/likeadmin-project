@@ -1,0 +1,90 @@
+:root {
+    --color-primary: #4173ff;
+    --color-primary-light: #6b91ff;
+    --color-primary-dark: #2d5ce6;
+    
+    --color-success: #52c41a;
+    --color-warning: #faad14;
+    --color-error: #ff4444;
+    --color-info: #1890ff;
+    
+    --color-page: #f5f5f5;
+    --color-white: #ffffff;
+    --color-black: #000000;
+    
+    --color-text: #333333;
+    --color-text-secondary: #666666;
+    --color-text-muted: #999999;
+    --color-text-light: #cccccc;
+    
+    --color-border: #e5e5e5;
+    --color-border-light: #f0f0f0;
+    --color-divider: #eeeeee;
+    
+    --color-bg-page: #f5f5f5;
+    --color-bg-card: #ffffff;
+    --color-bg-mask: rgba(0, 0, 0, 0.5);
+    
+    --color-gold: #bfa15f;
+    --color-gold-light: #fff8e1;
+    --color-yellow: #f7ce46;
+    --color-orange: #f1b32b;
+    
+    --color-green: #52c41a;
+    --color-green-light: #f6ffed;
+    
+    --color-red: #ff4444;
+    --color-red-light: #fff2f0;
+    
+    --color-blue: #1890ff;
+    --color-blue-light: #e6f7ff;
+    
+    --color-wechat: #07c160;
+    --color-alipay: #1677ff;
+    
+    --font-size-xs: 20rpx;
+    --font-size-sm: 24rpx;
+    --font-size-base: 28rpx;
+    --font-size-md: 30rpx;
+    --font-size-lg: 32rpx;
+    --font-size-xl: 36rpx;
+    --font-size-xxl: 40rpx;
+    
+    --spacing-xs: 8rpx;
+    --spacing-sm: 16rpx;
+    --spacing-base: 24rpx;
+    --spacing-md: 32rpx;
+    --spacing-lg: 40rpx;
+    --spacing-xl: 48rpx;
+    
+    --radius-sm: 8rpx;
+    --radius-base: 12rpx;
+    --radius-md: 16rpx;
+    --radius-lg: 24rpx;
+    --radius-xl: 32rpx;
+    --radius-round: 9999rpx;
+    
+    --shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+    --shadow-base: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 16rpx 48rpx rgba(0, 0, 0, 0.12);
+    
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.25s ease;
+    --transition-slow: 0.35s ease;
+    
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-fixed: 300;
+    --z-modal-backdrop: 400;
+    --z-modal: 500;
+    --z-popover: 600;
+    --z-toast: 700;
+}
+
+page {
+    --color-primary: #4173ff;
+    --color-page: #f5f5f5;
+    --color-white: #ffffff;
+    --color-text: #333333;
+}

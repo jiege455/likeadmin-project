@@ -1,0 +1,1 @@
+import{r as e}from"./index-Dun0cTL3.js";function s(){return e.get({url:"/setting.user.user/getConfig"})}function u(t){return e.post({url:"/setting.user.user/setConfig",params:t})}function n(){return e.get({url:"/setting.user.user/getRegisterConfig"})}export{s as a,n as g,u as s};

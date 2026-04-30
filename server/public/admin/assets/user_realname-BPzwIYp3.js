@@ -1,0 +1,1 @@
+import{r}from"./index-Dun0cTL3.js";function a(e){return r.get({url:"/user.user_realname/lists",params:e})}function s(e){return r.post({url:"/user.user_realname/audit",params:e})}function t(){return r.get({url:"/user.user_realname/getConfig"})}function u(e){return r.post({url:"/user.user_realname/setConfig",params:e})}export{s as a,t as g,a as r,u as s};

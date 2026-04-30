@@ -1,0 +1,1 @@
+import{r}from"./index-Dun0cTL3.js";function i(t){return r.get({url:"/finance.merchant_withdraw/lists",params:t})}function n(t){return r.post({url:"/finance.merchant_withdraw/audit",params:t})}function e(t){return r.get({url:"/finance.merchant_withdraw/statistics",params:t})}export{n as a,e as b,i as m};

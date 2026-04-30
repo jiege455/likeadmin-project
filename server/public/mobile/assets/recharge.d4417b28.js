@@ -1,0 +1,1 @@
+import{a4 as r}from"./index-a6824a0a.js";function t(t){return r.post({url:"/recharge/recharge",data:t},{isAuth:!0})}function e(t){return r.get({url:"/recharge/lists",data:t},{isAuth:!0})}let a=!1,n=null;function u(){return a&&n||(a=!0,n=r.get({url:"/recharge/config"},{isAuth:!0}),n.then((()=>{a=!1})).catch((()=>{a=!1}))),n}export{t as a,e as b,u as r};

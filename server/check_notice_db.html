@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据库检查工具 - 消息管理</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #409EFF;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #666;
+            margin-top: 30px;
+        }
+        .success {
+            color: #67C23A;
+            font-weight: bold;
+        }
+        .error {
+            color: #F56C6C;
+            font-weight: bold;
+        }
+        .warning {
+            color: #E6A23C;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        table th, table td {
+            border: 1px solid #DCDFE6;
+            padding: 12px;
+            text-align: left;
+        }
+        table th {
+            background: #f5f7fa;
+            font-weight: bold;
+        }
+        .info-box {
+            background: #ecf5ff;
+            border: 1px solid #b3d8ff;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .code {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: "Courier New", monospace;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+        .step {
+            background: #fef0f0;
+            border: 1px solid #fde2e2;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 数据库检查工具 - 消息管理通知设置</h1>
+        <p>开发者公众号：杰哥网络科技 | QQ: 2711793818 杰哥</p>
+        
+        <?php
+        // 加载 ThinkPHP
+        require __DIR__ . '/bootstrap.php';
+        
+        use think\facade\Db;
+        
+        $hasError = false;
+        $fixSuggestions = [];
+        
+        echo '<h2>1️⃣ 检查 la_notice_setting 表</h2>';
+        
+        try {
+            $tables = Db::query("SHOW TABLES LIKE 'la_notice_setting'");
+            
+            if (count($tables) > 0) {
+                echo '<p class="success">✓ 表 la_notice_setting 存在</p>';
+                
+                // 查看表结构
+                $columns = Db::query("SHOW COLUMNS FROM la_notice_setting");
+                echo '<h3>表结构：</h3>';
+                echo '<table>';
+                echo '<tr><th>字段</th><th>类型</th><th>注释</th></tr>';
+                foreach ($columns as $col) {
+                    echo '<tr>';
+                    echo '<td>' . htmlspecialchars($col['Field']) . '</td>';
+                    echo '<td>' . htmlspecialchars($col['Type']) . '</td>';
+                    echo '<td>' . htmlspecialchars($col['Comment'] ?? '') . '</td>';
+                    echo '</tr>';
+                }
+                echo '</table>';
+                
+                // 查看表数据
+                $count = Db::table('la_notice_setting')->count();
+                echo '<h3>数据统计：</h3>';
+                
+                if ($count > 0) {
+                    echo '<p class="success">✓ 表中有 ' . $count . ' 条记录</p>';
+                    
+                    // 分类统计
+                    $userCount = Db::table('la_notice_setting')->where('recipient', 1)->count();
+                    $platformCount = Db::table('la_notice_setting')->where('recipient', 2)->count();
+                    
+                    echo '<div class="info-box">';
+                    echo '<strong>数据分布：</strong><br>';
+                    echo '• 通知用户场景 (recipient=1): ' . $userCount . ' 条<br>';
+                    echo '• 通知平台场景 (recipient=2): ' . $platformCount . ' 条';
+                    echo '</div>';
+                    
+                    // 显示详细数据
+                    $lists = Db::table('la_notice_setting')
+                        ->field('id, scene_id, scene_name, scene_desc, recipient, type, support')
+                        ->order('id', 'asc')
+                        ->select()
+                        ->toArray();
+                    
+                    echo '<h3>详细数据：</h3>';
+                    echo '<table>';
+                    echo '<tr><th>ID</th><th>场景 ID</th><th>场景名称</th><th>场景描述</th><th>接收者</th><th>类型</th><th>支持方式</th></tr>';
+                    foreach ($lists as $row) {
+                        $recipientText = $row['recipient'] == 1 ? '用户' : '平台';
+                        $typeText = $row['type'] == 1 ? '业务通知' : '验证码';
+                        $supportText = str_replace(',', ' | ', $row['support']);
+                        
+                        echo '<tr>';
+                        echo '<td>' . $row['id'] . '</td>';
+                        echo '<td>' . $row['scene_id'] . '</td>';
+                        echo '<td>' . htmlspecialchars($row['scene_name']) . '</td>';
+                        echo '<td>' . htmlspecialchars($row['scene_desc']) . '</td>';
+                        echo '<td>' . $recipientText . '</td>';
+                        echo '<td>' . $typeText . '</td>';
+                        echo '<td>' . $supportText . '</td>';
+                        echo '</tr>';
+                    }
+                    echo '</table>';
+                    
+                    // 检查必需的场景
+                    $requiredScenes = [
+                        101 => '登录验证码',
+                        102 => '绑定手机验证码',
+                        103 => '变更手机验证码',
+                        104 => '找回登录密码验证码',
+                        105 => '商家入驻验证码'
+                    ];
+                    
+                    echo '<h3>必需场景检查：</h3>';
+                    $missingScenes = [];
+                    foreach ($requiredScenes as $sceneId => $sceneName) {
+                        $exists = Db::table('la_notice_setting')
+                            ->where('scene_id', $sceneId)
+                            ->where('recipient', 1)
+                            ->find();
+                        
+                        if ($exists) {
+                            echo '<p class="success">✓ 场景 ' . $sceneId . ' (' . $sceneName . ') 存在</p>';
+                        } else {
+                            echo '<p class="error">✗ 场景 ' . $sceneId . ' (' . $sceneName . ') 缺失</p>';
+                            $missingScenes[] = $sceneId;
+                            $hasError = true;
+                        }
+                    }
+                    
+                    if (empty($missingScenes)) {
+                        echo '<p class="success">✓ 所有必需场景都存在</p>';
+                    }
+                    
+                } else {
+                    echo '<p class="error">✗ 表为空，没有数据！</p>';
+                    $hasError = true;
+                    $fixSuggestions[] = '需要插入基础数据';
+                }
+                
+            } else {
+                echo '<p class="error">✗ 表 la_notice_setting 不存在！</p>';
+                $hasError = true;
+                $fixSuggestions[] = '需要创建表';
+            }
+            
+        } catch (\Exception $e) {
+            echo '<p class="error">✗ 检查失败：' . htmlspecialchars($e->getMessage()) . '</p>';
+            $hasError = true;
+        }
+        
+        echo '<h2>2️⃣ 检查 la_config 表（短信配置）</h2>';
+        
+        try {
+            $tables = Db::query("SHOW TABLES LIKE 'la_config'");
+            
+            if (count($tables) > 0) {
+                echo '<p class="success">✓ 表 la_config 存在</p>';
+                
+                $smsConfigs = Db::table('la_config')->where('type', 'sms')->select()->toArray();
+                
+                if (count($smsConfigs) > 0) {
+                    echo '<p class="success">✓ 找到 ' . count($smsConfigs) . ' 条短信配置</p>';
+                    
+                    echo '<table>';
+                    echo '<tr><th>配置名称</th><th>配置值（部分）</th></tr>';
+                    foreach ($smsConfigs as $config) {
+                        $valuePreview = mb_substr($config['value'], 0, 80);
+                        if (mb_strlen($config['value']) > 80) {
+                            $valuePreview .= '...';
+                        }
+                        echo '<tr>';
+                        echo '<td>' . htmlspecialchars($config['name']) . '</td>';
+                        echo '<td class="code">' . htmlspecialchars($valuePreview) . '</td>';
+                        echo '</tr>';
+                    }
+                    echo '</table>';
+                } else {
+                    echo '<p class="warning">⚠ 无短信配置数据</p>';
+                    $fixSuggestions[] = '需要添加短信配置';
+                }
+                
+            } else {
+                echo '<p class="error">✗ 表 la_config 不存在！</p>';
+                $hasError = true;
+                $fixSuggestions[] = '需要创建 la_config 表';
+            }
+            
+        } catch (\Exception $e) {
+            echo '<p class="error">✗ 检查失败：' . htmlspecialchars($e->getMessage()) . '</p>';
+            $hasError = true;
+        }
+        
+        // 总结
+        echo '<h2>📋 检查总结</h2>';
+        
+        if (!$hasError) {
+            echo '<div class="info-box">';
+            echo '<p class="success">✓ 数据库检查通过！所有必需的表和数据都存在。</p>';
+            echo '<p>如果页面仍然报错，请检查：</p>';
+            echo '<ul>';
+            echo '<li>浏览器控制台（F12）的错误信息</li>';
+            echo '<li>后端日志文件：runtime/adminapi/log/</li>';
+            echo '<li>API 接口是否正常：/adminapi/notice.notice/settingLists</li>';
+            echo '</ul>';
+            echo '</div>';
+        } else {
+            echo '<div class="step">';
+            echo '<h3>⚠ 发现问题，需要修复</h3>';
+            echo '<p><strong>问题列表：</strong></p>';
+            echo '<ul>';
+            foreach ($fixSuggestions as $suggestion) {
+                echo '<li>' . htmlspecialchars($suggestion) . '</li>';
+            }
+            echo '</ul>';
+            
+            echo '<h3>🔧 修复步骤：</h3>';
+            echo '<ol>';
+            echo '<li>打开数据库管理工具（phpMyAdmin 或 Navicat）</li>';
+            echo '<li>选择数据库 <code>127_0_0_1</code></li>';
+            echo '<li>执行 SQL 修复脚本：<code>public/install/db/fix_notice_setting.sql</code></li>';
+            echo '<li>刷新本页面重新检查</li>';
+            echo '<li>刷新后台管理页面测试</li>';
+            echo '</ol>';
+            
+            echo '<div class="info-box">';
+            echo '<p><strong>修复脚本位置：</strong></p>';
+            echo '<p class="code">' . realpath(__DIR__ . '/public/install/db/fix_notice_setting.sql') . '</p>';
+            echo '</div>';
+            echo '</div>';
+        }
+        ?>
+        
+        <h2>📚 相关说明文档</h2>
+        <div class="info-box">
+            <p><strong>详细问题分析和解决方案请查看：</strong></p>
+            <p class="code"><?php echo realpath(__DIR__ . '/NOTICE_DB_FIX.md'); ?></p>
+        </div>
+        
+        <hr style="margin-top: 40px; border: none; border-top: 2px solid #eee;">
+        <p style="text-align: center; color: #999; font-size: 12px;">
+            开发者公众号：杰哥网络科技 | QQ: 2711793818 杰哥
+        </p>
+    </div>
+</body>
+</html>

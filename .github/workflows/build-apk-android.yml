@@ -7,6 +7,11 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+# 添加权限配置
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   build-android:
     runs-on: ubuntu-latest
@@ -20,15 +25,6 @@ jobs:
       with:
         node-version: '18'
         
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-      
     - name: Install dependencies
       run: |
         cd uniapp
@@ -39,54 +35,41 @@ jobs:
         cd uniapp
         npm run build:app
         
-    - name: Download UniApp Offline SDK
+    - name: Check build output
       run: |
-        mkdir -p android-sdk
-        cd android-sdk
-        # 下载DCloud离线打包SDK
-        wget -q https://native-res.dcloud.net.cn/android-sdk/Android-SDK@4.36.81559_20241231.zip -O android-sdk.zip || true
-        if [ -f android-sdk.zip ]; then
-          unzip -q android-sdk.zip
-        fi
-        
-    - name: Prepare Android Project
-      run: |
-        # 创建简单的Android项目结构
-        mkdir -p android-app/app/src/main/assets/apps
-        # 复制uniapp构建的资源
+        echo "=== Checking build output ==="
+        ls -la uniapp/dist/build/ || true
         if [ -d "uniapp/dist/build/app-plus" ]; then
-          cp -r uniapp/dist/build/app-plus/* android-app/app/src/main/assets/apps/
+          echo "=== App-plus directory exists ==="
+          ls -la uniapp/dist/build/app-plus/ || true
+        else
+          echo "=== App-plus directory NOT found ==="
+          ls -la uniapp/dist/build/app/ || true
         fi
         
-    - name: Build APK with Gradle
-      run: |
-        if [ -f "android-sdk/gradle/wrapper/gradle-wrapper.properties" ]; then
-          cd android-sdk
-          ./gradlew assembleRelease || true
-        fi
-        
-    - name: Upload APK Artifact
+    - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: android-apk
+        name: android-app-resources
         path: |
-          android-sdk/**/build/outputs/apk/**/*.apk
           uniapp/dist/build/app-plus/
+          uniapp/dist/build/app/
         if-no-files-found: warn
         
-    - name: Create Release with APK
+    - name: Create Release
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: apk-v${{ github.run_number }}
-        name: Android APK Release v${{ github.run_number }}
+        name: Android Resources Release v${{ github.run_number }}
         body: |
-          自动构建的Android APK
+          自动构建的Android App资源文件
           构建时间: ${{ github.event.head_commit.timestamp }}
           提交信息: ${{ github.event.head_commit.message }}
           
-          注意：此APK为自动构建版本，如需正式签名APK，请使用HBuilderX云打包或本地离线打包。
+          注意：此资源文件需要使用HBuilderX或离线SDK打包成APK。
         files: |
-          android-sdk/**/build/outputs/apk/**/*.apk
+          uniapp/dist/build/app-plus/**
+          uniapp/dist/build/app/**
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

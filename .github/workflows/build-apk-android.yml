@@ -12,10 +12,6 @@ permissions:
   contents: write
   actions: read
 
-# 设置环境变量使用Node24
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build-android:
     runs-on: ubuntu-latest
@@ -75,8 +71,7 @@ jobs:
           提交信息: ${{ github.event.head_commit.message }}
           
           注意：此资源文件需要使用HBuilderX或离线SDK打包成APK。
-        # 只上传存在的目录
         files: |
-          uniapp/dist/build/app/***
+          uniapp/dist/build/app/**
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

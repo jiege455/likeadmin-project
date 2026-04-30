@@ -1,20 +1,68 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+# 开发者：杰哥网络科技
+# QQ：2711793818
 
-# Other files and folders
-.settings/
+# 依赖目录
+node_modules/
+vendor/
+composer.lock
+package-lock.json
+yarn.lock
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+# 构建输出
+dist/
+build/
+.unpackage/
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+# 日志文件
+*.log
+logs/
 
-/.idea
+# 运行时数据
+runtime/
+cache/
+temp/
+
+# 数据库文件
+*.sql
+*.sqlite
+*.db
+
+# 环境配置（包含敏感信息）
+.env
+.env.local
+.env.*.local
+
+# IDE 和编辑器
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 上传的文件
+uploads/
+public/uploads/
+public/storage/
+
+# 测试文件
+tests/
+phpunit.xml
+.coverage/
+
+# 备份文件
+*.bak
+*.backup
+*.old
+
+# 系统文件
+Thumbs.db
+desktop.ini
+
+# HBuilderX
+.hbuilderx/
+
+# 其他
+*.zip
+*.tar.gz
+*.rar

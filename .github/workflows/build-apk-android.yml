@@ -71,7 +71,8 @@ jobs:
           提交信息: ${{ github.event.head_commit.message }}
           
           注意：此资源文件需要使用HBuilderX或离线SDK打包成APK。
+        # 使用通配符上传整个目录
         files: |
-          uniapp/dist/build/app/**
+          uniapp/dist/build/app/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
